@@ -65,3 +65,15 @@ CREATE INDEX idx_crimes_incident_date
 
 CREATE INDEX idx_crimes_accused_name
     ON crimes(accused_name);
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id              SERIAL PRIMARY KEY,
+    username        VARCHAR UNIQUE NOT NULL,
+    email           VARCHAR UNIQUE NOT NULL,
+    hashed_password VARCHAR NOT NULL,
+    role            VARCHAR DEFAULT 'investigator',
+    is_active       BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
