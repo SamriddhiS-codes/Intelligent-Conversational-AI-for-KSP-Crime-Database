@@ -50,7 +50,7 @@ RULES:
 
 def _get_model():
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    return genai.GenerativeModel("gemini-1.5-flash")
+    return genai.GenerativeModel("gemini-2.5-flash-lite")
 
 def natural_language_to_sql(user_question: str, conversation_history: list[dict] = None) -> str:
     """
