@@ -6,6 +6,11 @@ import { Navbar } from "./components/layout/Navbar";
 import { HeroSearch } from "./components/home/HeroSearch";
 import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
+import { AnalyticsPage } from "./pages/AnalyticsPage";
+import { NetworkPage } from "./pages/NetworkPage";
+import { HotspotPage } from "./pages/HotspotPage";
+import { FIRSearchPage } from "./pages/FIRSearchPage";
+import { ReportsPage } from "./pages/ReportsPage";
 
 function ProtectedLayout({ children }) {
   const { isAuthenticated } = useAuth();
@@ -23,7 +28,6 @@ function ProtectedLayout({ children }) {
 
 function NavbarWithSearch() {
   const { workspace, ask, reset } = useWorkspace();
-
   return (
     <Navbar
       onLogoClick={reset}
@@ -36,14 +40,13 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedLayout>
-            <HomePage />
-          </ProtectedLayout>
-        }
-      />
+      <Route path="/" element={<ProtectedLayout><HomePage /></ProtectedLayout>} />
+      <Route path="/workspace" element={<ProtectedLayout><HomePage /></ProtectedLayout>} />
+      <Route path="/analytics" element={<ProtectedLayout><AnalyticsPage /></ProtectedLayout>} />
+      <Route path="/network" element={<ProtectedLayout><NetworkPage /></ProtectedLayout>} />
+      <Route path="/hotspots" element={<ProtectedLayout><HotspotPage /></ProtectedLayout>} />
+      <Route path="/fir-search" element={<ProtectedLayout><FIRSearchPage /></ProtectedLayout>} />
+      <Route path="/reports" element={<ProtectedLayout><ReportsPage /></ProtectedLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
