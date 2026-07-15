@@ -1,13 +1,21 @@
 from sqlalchemy.orm import Session
-from ..services.gemini_service import natural_language_to_sql, summarize_results, detect_intent
+from ..services.gemini_service import classify_and_generate_sql, summarize_results, GeminiQuotaExceeded
 from ..services.sql_service import execute_query
 from fastapi import HTTPException
 
 def handle_query(db: Session, question: str, conversation_history: list[dict] = None) -> dict:
     """
     Full pipeline: NL question → SQL → execute → summarize → return.
+    Intent classification + SQL generation happen in a single Gemini call
+    to conserve free-tier request quota.
     """
-    intent = detect_intent(question)
+    try:
+        classification = classify_and_generate_sql(question, conversation_history)
+    except GeminiQuotaExceeded as e:
+        raise HTTPException(status_code=429, detail=str(e))
+
+    intent = classification["intent"]
+    sql = classification["sql"]
 
     if intent == "greeting":
         return {
@@ -19,23 +27,10 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
             "summary": None,
         }
 
-    if intent == "unsupported":
+    if intent == "unsupported" or not sql:
         return {
             "intent": "unsupported",
             "message": "I can only answer questions related to the KSP crime database. Please ask about crime records, patterns, or statistics.",
-            "sql": None,
-            "results": [],
-            "row_count": 0,
-            "summary": None,
-        }
-
-    # Generate SQL
-    sql = natural_language_to_sql(question, conversation_history)
-
-    if sql == "UNSUPPORTED_QUERY":
-        return {
-            "intent": intent,
-            "message": "I couldn't find a way to answer that with the available crime data.",
             "sql": None,
             "results": [],
             "row_count": 0,
@@ -50,7 +45,7 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-    # Summarize with AI
+    # Summarize with AI (degrades gracefully to a templated summary on quota errors)
     summary = summarize_results(question, sql, results, row_count)
 
     return {

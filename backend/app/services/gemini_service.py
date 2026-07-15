@@ -1,8 +1,14 @@
 import google.generativeai as genai
 from ..config import get_settings
+from google.api_core.exceptions import ResourceExhausted
 import re
+import json
 
 settings = get_settings()
+
+class GeminiQuotaExceeded(Exception):
+    """Raised when the Gemini free-tier request quota is exhausted."""
+    pass
 
 # Schema context given to Gemini so it understands the database
 DB_SCHEMA_CONTEXT = """
@@ -42,24 +48,34 @@ RULES:
 2. Always use LIMIT 100 unless the user asks for aggregates (COUNT, SUM, AVG etc.).
 3. For text comparisons, use ILIKE for case-insensitive matching.
 4. For date ranges, use BETWEEN or >= / <=.
-5. Return ONLY the raw SQL query — no markdown, no explanation, no backticks.
-6. If the question cannot be answered with this schema, return exactly: UNSUPPORTED_QUERY
-7. For "hotspot" or "most common" questions, use GROUP BY + ORDER BY + LIMIT.
-8. Never expose complainant_contact in results unless explicitly asked.
+5. If the question cannot be answered with this schema, set "sql" to null.
+6. For "hotspot" or "most common" questions, use GROUP BY + ORDER BY + LIMIT.
+7. Never expose complainant_contact in results unless explicitly asked.
 """
 
 def _get_model():
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    return genai.GenerativeModel("gemini-2.5-flash-lite")
+    return genai.GenerativeModel("gemini-3.1-flash-lite")
 
-def natural_language_to_sql(user_question: str, conversation_history: list[dict] = None) -> str:
+def _generate(model, prompt: str):
+    """Wraps model.generate_content and turns quota errors into a typed
+    exception the caller can handle gracefully instead of a raw 500."""
+    try:
+        return model.generate_content(prompt)
+    except ResourceExhausted as e:
+        raise GeminiQuotaExceeded(
+            "The AI service has hit its request quota. Please try again shortly, "
+            "or ask an admin to upgrade the Gemini API plan."
+        ) from e
+
+def classify_and_generate_sql(user_question: str, conversation_history: list[dict] = None) -> dict:
     """
-    Convert a natural language question (English or Kannada) to a SQL query.
-    Returns the SQL string or raises an exception.
+    Single combined call: classifies intent AND (if applicable) generates SQL
+    in one round trip, instead of two separate Gemini calls. Returns:
+    {"intent": ..., "sql": ... or None}
     """
     model = _get_model()
 
-    # Build prompt with optional conversation context
     history_context = ""
     if conversation_history:
         last_turns = conversation_history[-4:]  # last 2 exchanges
@@ -71,20 +87,52 @@ def natural_language_to_sql(user_question: str, conversation_history: list[dict]
 {history_context}
 USER QUESTION: {user_question}
 
-Generate the SQL query now:"""
+Classify the message into exactly one intent:
+- query: asking for specific crime records or counts
+- analytics: asking for patterns, trends, hotspots, comparisons
+- prediction: asking about future predictions or risk
+- greeting: hello, hi, introduction
+- unsupported: completely unrelated to crime data
 
-    response = model.generate_content(prompt)
-    sql = response.text.strip()
+If intent is "query", "analytics", or "prediction", also generate the PostgreSQL SELECT query
+that answers it, following the RULES above. If intent is "greeting" or "unsupported", or if the
+question cannot be answered with this schema, set "sql" to null.
 
-    # Strip accidental markdown fences
-    sql = re.sub(r"```sql|```", "", sql).strip()
+Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
+{{"intent": "<one of the categories above>", "sql": "<SQL string or null>"}}"""
 
-    return sql
+    response = _generate(model, prompt)
+    raw = response.text.strip()
+    raw = re.sub(r"```json|```", "", raw).strip()
+
+    try:
+        parsed = json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        # Model didn't return clean JSON — fail safe rather than crash the request.
+        return {"intent": "query", "sql": None}
+
+    intent = str(parsed.get("intent", "query")).lower()
+    valid = {"query", "analytics", "prediction", "greeting", "unsupported"}
+    if intent not in valid:
+        intent = "query"
+
+    sql = parsed.get("sql")
+    if sql:
+        sql = re.sub(r"```sql|```", "", str(sql)).strip()
+
+    return {"intent": intent, "sql": sql}
+
+def natural_language_to_sql(user_question: str, conversation_history: list[dict] = None) -> str:
+    """Kept for any direct callers — now just delegates to the combined call."""
+    result = classify_and_generate_sql(user_question, conversation_history)
+    return result["sql"] or "UNSUPPORTED_QUERY"
 
 def summarize_results(user_question: str, sql_query: str, results: list[dict], row_count: int) -> str:
     """
     Generate a human-readable, investigator-friendly summary of query results.
-    Supports both English and Kannada questions.
+    Supports both English and Kannada questions. Falls back to a plain
+    templated summary if the Gemini quota is exhausted, so the query itself
+    still succeeds even when the AI narration can't run.
     """
     model = _get_model()
 
@@ -115,12 +163,25 @@ Your task:
 
 Summary:"""
 
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    try:
+        response = _generate(model, prompt)
+        return response.text.strip()
+    except GeminiQuotaExceeded:
+        # Degrade gracefully: the query itself already succeeded, so still
+        # return something useful instead of failing the whole request.
+        if row_count == 0:
+            return "No matching records were found. (AI summary unavailable — request quota reached.)"
+        return (
+            f"Found {row_count} matching record{'s' if row_count != 1 else ''}. "
+            "(AI-generated summary unavailable right now — request quota reached; "
+            "raw results are shown below.)"
+        )
 
 def detect_intent(user_question: str) -> str:
     """
-    Classify the user's intent: 'query', 'analytics', 'prediction', 'greeting', 'unsupported'
+    Classify the user's intent: 'query', 'analytics', 'prediction', 'greeting', 'unsupported'.
+    Kept for any direct callers — the main pipeline uses classify_and_generate_sql instead,
+    which does this in the same call as SQL generation to save quota.
     """
     model = _get_model()
     prompt = f"""Classify this message from a police investigator into exactly one category:
@@ -134,7 +195,7 @@ Message: "{user_question}"
 
 Reply with exactly one word (the category):"""
 
-    response = model.generate_content(prompt)
+    response = _generate(model, prompt)
     intent = response.text.strip().lower()
     valid = {"query", "analytics", "prediction", "greeting", "unsupported"}
     return intent if intent in valid else "query"
