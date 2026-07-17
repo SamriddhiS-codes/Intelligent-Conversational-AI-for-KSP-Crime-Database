@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from ..database import get_db
 from ..controllers import auth_controller
+from ..middleware.auth_middleware import require_role
+from ..models.user import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -23,3 +25,21 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/register")
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
     return auth_controller.register(db, body.username, body.email, body.password, body.role)
+
+@router.get("/users")
+def list_users(
+    db: Session = Depends(get_db),
+    current_user = Depends(require_role("admin"))
+):
+    users = db.query(User).all()
+    return [
+        {
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "role": u.role,
+            "is_active": u.is_active,
+            "created_at": str(u.created_at)
+        }
+        for u in users
+    ]
