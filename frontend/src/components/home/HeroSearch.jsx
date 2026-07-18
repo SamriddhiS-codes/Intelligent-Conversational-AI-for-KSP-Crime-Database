@@ -40,7 +40,7 @@ export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
     const q = value.trim();
     if (!q) return;
     onSubmit(q);
-    if (!compact) setValue("");
+    setValue("");
   };
 
   return (
