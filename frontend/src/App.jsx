@@ -6,6 +6,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { HeroSearch } from "./components/home/HeroSearch";
 import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
+import { WorkspacePage } from "./pages/WorkspacePage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { NetworkPage } from "./pages/NetworkPage";
 import { HotspotPage } from "./pages/HotspotPage";
@@ -42,7 +43,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<ProtectedLayout><HomePage /></ProtectedLayout>} />
-      <Route path="/workspace" element={<ProtectedLayout><HomePage /></ProtectedLayout>} />
+      <Route path="/workspace" element={<ProtectedLayout><WorkspacePage /></ProtectedLayout>} />
       <Route path="/analytics" element={<ProtectedLayout><AnalyticsPage /></ProtectedLayout>} />
       <Route path="/network" element={<ProtectedLayout><NetworkPage /></ProtectedLayout>} />
       <Route path="/hotspots" element={<ProtectedLayout><HotspotPage /></ProtectedLayout>} />
