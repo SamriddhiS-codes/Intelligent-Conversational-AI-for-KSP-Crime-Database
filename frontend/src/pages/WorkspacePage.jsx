@@ -10,64 +10,141 @@ import { CrimeNetworkCard } from "../components/workspace/CrimeNetworkCard";
 import { DistrictBreakdownCard } from "../components/workspace/DistrictBreakdownCard";
 import { PredictiveSignalCard } from "../components/workspace/PredictiveSignalCard";
 import { ReportExportButton } from "../components/workspace/ReportExportButton";
+import { HeroSearch } from "../components/home/HeroSearch";
+import { useRef, useEffect } from "react";
 
 const HOTSPOT_HINT = /hotspot|concentrat|highest.crime|most crime/i;
 const NETWORK_HINT = /network|repeat offender|linked to|connection|associat/i;
 
-export function WorkspacePage() {
-  const { workspace, prompt, history } = useWorkspace();
-  if (!workspace) return null;
+function MarkdownText({ text }) {
+  if (!text) return null;
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return (
+    <span>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+      )}
+    </span>
+  );
+}
 
-  const { intent, summary, message, sql, results, row_count, askedAt, question } = workspace;
+function QueryBlock({ entry }) {
+  const { question, data } = entry;
+  const { intent, summary, message, sql, results, row_count, askedAt } = data;
+
   const isRecordLike = results?.length && "fir_number" in results[0];
   const isAggregateLike = results?.length && !isRecordLike;
-
   const wantsHotspot = intent === "analytics" && HOTSPOT_HINT.test(question);
   const wantsNetwork = intent === "analytics" && NETWORK_HINT.test(question);
   const wantsPrediction = intent === "prediction";
   const wantsDistrictBreakdown = intent === "analytics" && !wantsHotspot && !wantsNetwork;
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      <WorkspaceHeader prompt={prompt || question} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="lg:col-span-2">
-          <SummaryCard summary={summary || message} rowCount={row_count} delay={0} />
+    <div className="mb-10">
+      <div className="flex justify-end mb-4">
+        <div className="bg-accent text-white rounded-2xl rounded-tr-sm px-5 py-3 max-w-xl text-sm font-medium shadow-sm">
+          {question}
         </div>
+      </div>
 
-        <div className="lg:col-span-2">
-          <ExplainabilityCard sql={sql} intent={intent} askedAt={askedAt} delay={0.08} />
+      <div className="flex justify-start">
+        <div className="w-full max-w-5xl">
+          <WorkspaceHeader prompt={question} askedAt={askedAt} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
+            <div className="lg:col-span-2">
+              <SummaryCard
+                summary={<MarkdownText text={summary || message} />}
+                rowCount={row_count}
+                delay={0}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <ExplainabilityCard sql={sql} intent={intent} askedAt={askedAt} delay={0.08} />
+            </div>
+            {isRecordLike && (
+              <div className="lg:col-span-2">
+                <p className="text-xs font-medium tracking-wide uppercase text-ink-muted mb-3">
+                  Matching Records
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {results.slice(0, 30).map((r, i) => (
+                    <RecordCard key={r.id || i} record={r} delay={0.03 * i} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {isAggregateLike && (
+              <div className="lg:col-span-2">
+                <StatisticsCard rows={results} delay={0.12} />
+              </div>
+            )}
+            {wantsHotspot && <HotspotMapCard delay={0.16} />}
+            {wantsNetwork && <CrimeNetworkCard delay={0.16} />}
+            {wantsPrediction && <PredictiveSignalCard delay={0.16} />}
+            {wantsDistrictBreakdown && <DistrictBreakdownCard delay={0.16} />}
+            {(intent === "analytics" || wantsPrediction) && <TimelineCard delay={0.2} />}
+          </div>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {isRecordLike && (
-          <div className="lg:col-span-2">
-            <p className="text-xs font-medium tracking-wide uppercase text-ink-muted mb-3">
-              Matching Records
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.slice(0, 30).map((r, i) => (
-                <RecordCard key={r.id || i} record={r} delay={0.03 * i} />
-              ))}
+export function WorkspacePage() {
+  const { chatEntries, loading, error, ask, history, workspace } = useWorkspace();
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatEntries, loading]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1 overflow-y-auto px-6 py-8 max-w-5xl mx-auto w-full">
+
+        {/* Empty state */}
+        {!chatEntries?.length && !loading && (
+          <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+            <p className="text-2xl font-semibold text-ink mb-2">AI Workspace</p>
+            <p className="text-ink-muted text-sm mb-1">Ask any question about Karnataka crime data</p>
+            <p className="text-ink-muted text-xs">Supports English and ಕನ್ನಡ</p>
+          </div>
+        )}
+
+        {chatEntries?.map((entry, i) => (
+          <QueryBlock key={i} entry={entry} />
+        ))}
+
+        {loading && (
+          <div className="flex justify-start mb-6">
+            <div className="bg-card border border-border rounded-2xl px-5 py-3 text-sm text-ink-muted flex items-center gap-2">
+              <span className="animate-pulse">●</span>
+              <span className="animate-pulse delay-100">●</span>
+              <span className="animate-pulse delay-200">●</span>
+              <span className="ml-2">Analyzing crime data...</span>
             </div>
           </div>
         )}
 
-        {isAggregateLike && (
-          <div className="lg:col-span-2">
-            <StatisticsCard rows={results} delay={0.12} />
+        {error && (
+          <div className="bg-red-50 text-red-600 rounded-xl p-4 mb-4 text-sm">
+            ⚠️ {error}
           </div>
         )}
 
-        {wantsHotspot && <HotspotMapCard delay={0.16} />}
-        {wantsNetwork && <CrimeNetworkCard delay={0.16} />}
-        {wantsPrediction && <PredictiveSignalCard delay={0.16} />}
-        {wantsDistrictBreakdown && <DistrictBreakdownCard delay={0.16} />}
-        {(intent === "analytics" || wantsPrediction) && <TimelineCard delay={0.2} />}
+        <div ref={bottomRef} />
       </div>
 
-      <div className="mt-10">
-        <ReportExportButton conversation={history} queryResults={results} />
+      {chatEntries?.length > 0 && (
+        <div className="px-6 max-w-5xl mx-auto w-full mb-2">
+          <ReportExportButton conversation={history} queryResults={workspace?.results} />
+        </div>
+      )}
+
+      <div className="sticky bottom-0 bg-bg-primary/90 backdrop-blur border-t border-border px-6 py-4">
+        <div className="max-w-3xl mx-auto">
+          <HeroSearch compact onSubmit={ask} />
+        </div>
       </div>
     </div>
   );
