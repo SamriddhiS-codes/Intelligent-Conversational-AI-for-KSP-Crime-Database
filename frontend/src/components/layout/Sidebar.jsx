@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   Users,
+  Map,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -18,6 +19,7 @@ const ITEMS = [
   { to: "/workspace", icon: Sparkles, label: "AI Workspace" },
   { to: "/fir-search", icon: FileSearch, label: "FIR Search" },
   { to: "/network", icon: Network, label: "Criminal Network" },
+  { to: "/hotspots", icon: Map, label: "Hotspot Map" },
   { to: "/reports", icon: FileText, label: "Reports" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
 ];
