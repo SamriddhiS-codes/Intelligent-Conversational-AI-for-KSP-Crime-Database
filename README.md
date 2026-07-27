@@ -1,3 +1,8 @@
+# Username
+admin
+# Password
+Admin@1234
+
 # KSP Intelligence AI — Frontend
 
 React + Vite + Tailwind investigation-workspace UI for the KSP Crime Intelligence backend.
