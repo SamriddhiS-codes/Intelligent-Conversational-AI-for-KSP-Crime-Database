@@ -6,7 +6,7 @@ from ..controllers import auth_controller
 from ..middleware.auth_middleware import require_role
 from ..models.user import User
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 class LoginRequest(BaseModel):
     username: str

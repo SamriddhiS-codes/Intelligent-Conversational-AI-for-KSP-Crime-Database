@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     # Database
@@ -11,26 +12,35 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ""
 
-    # JWT Auth
+    # JWT
     SECRET_KEY: str = "changeme-use-a-long-random-string-in-production"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8 hours
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
 
     # App
     APP_NAME: str = "KSP Crime Intelligence"
     DEBUG: bool = True
+    RUN_ENV: str = "production"
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
     @property
-    def DATABASE_URL(self) -> str:
+    def DATABASE_URL(self):
         return (
             f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
 
-@lru_cache()
-def get_settings() -> Settings:
-    return Settings()
+@lru_cache
+def get_settings():
+    settings = Settings()
+
+    print("========== SETTINGS ==========")
+    print(settings.DATABASE_URL)
+    print("==============================")
+
+    return settings

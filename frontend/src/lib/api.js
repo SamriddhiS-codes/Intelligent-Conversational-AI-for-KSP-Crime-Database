@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const client = axios.create({ baseURL: BASE_URL });
 
@@ -28,10 +28,10 @@ client.interceptors.response.use(
 
 // ---- Auth ----
 export const login = (username, password) =>
-  client.post("/auth/login", { username, password }).then((r) => r.data);
+  client.post("/api/auth/login", { username, password }).then((r) => r.data);
 
 export const register = (username, email, password, role = "investigator") =>
-  client.post("/auth/register", { username, email, password, role }).then((r) => r.data);
+  client.post("/api/auth/register", { username, email, password, role }).then((r) => r.data);
 
 // ---- Query (the core NL -> SQL pipeline) ----
 export const runQuery = (question, conversation_history = []) =>

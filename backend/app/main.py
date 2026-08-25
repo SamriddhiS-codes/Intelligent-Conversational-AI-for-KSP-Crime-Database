@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .database import test_connection, engine, Base
@@ -19,19 +19,24 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS — allow the React frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5173",      
-        "http://127.0.0.1:5173",     
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f">>> {request.method} {request.url.path}")
+    response = await call_next(request)
+    return response
+
+# CORS: only needed for LOCAL development.
+# In production on Catalyst, ZGS gateway injects Access-Control-Allow-Origin itself —
+# adding this middleware there too causes duplicate headers, which browsers reject.
+# Set RUN_ENV=local in your local .env to enable this.
+if settings.RUN_ENV == "local":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Register all routers
 app.include_router(auth.router)
@@ -39,9 +44,9 @@ app.include_router(query.router)
 app.include_router(analytics.router)
 app.include_router(export.router)
 
+
 @app.on_event("startup")
 async def startup():
-    # Create users table if it doesn't exist
     Base.metadata.create_all(bind=engine)
     print("✅ Database tables ready")
     if test_connection():

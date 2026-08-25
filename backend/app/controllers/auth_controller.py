@@ -23,11 +23,26 @@ def create_access_token(data: dict) -> str:
 
 def login(db: Session, username: str, password: str) -> dict:
     user = db.query(User).filter(User.username == username).first()
+
+    print("========== LOGIN DEBUG ==========")
+    print("Input username:", username)
+    print("Input password:", password)
+    print("User exists:", user is not None)
+
+    if user:
+        print("Stored hash:", user.hashed_password)
+        try:
+            print("Verify result:", verify_password(password, user.hashed_password))
+        except Exception as e:
+            print("Verify exception:", e)
+    print("================================")
+
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password"
         )
+
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
@@ -35,7 +50,12 @@ def login(db: Session, username: str, password: str) -> dict:
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "username": user.username, "role": user.role, "email": user.email}
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "role": user.role,
+            "email": user.email
+        }
     }
 
 def register(db: Session, username: str, email: str, password: str, role: str = "investigator") -> dict:
