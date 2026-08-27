@@ -91,12 +91,15 @@ Classify the message into exactly one intent:
 - query: asking for specific crime records or counts
 - analytics: asking for patterns, trends, hotspots, comparisons
 - prediction: asking about future predictions or risk
+- similar_cases: describing a new/hypothetical case and asking to find similar past
+  cases, or asking "have we seen cases like this before" (this is about matching
+  case NARRATIVES/circumstances, not filtering by exact field values)
 - greeting: hello, hi, introduction
 - unsupported: completely unrelated to crime data
 
 If intent is "query", "analytics", or "prediction", also generate the PostgreSQL SELECT query
-that answers it, following the RULES above. If intent is "greeting" or "unsupported", or if the
-question cannot be answered with this schema, set "sql" to null.
+that answers it, following the RULES above. If intent is "similar_cases", "greeting", or
+"unsupported", or if the question cannot be answered with this schema, set "sql" to null.
 
 Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
 {{"intent": "<one of the categories above>", "sql": "<SQL string or null>"}}"""
@@ -112,7 +115,7 @@ Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
         return {"intent": "query", "sql": None}
 
     intent = str(parsed.get("intent", "query")).lower()
-    valid = {"query", "analytics", "prediction", "greeting", "unsupported"}
+    valid = {"query", "analytics", "prediction", "similar_cases", "greeting", "unsupported"}
     if intent not in valid:
         intent = "query"
 
