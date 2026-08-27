@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from ..services.gemini_service import classify_and_generate_sql, summarize_results, GeminiQuotaExceeded
+from ..services.rag_service import handle_similar_case_query
 from ..services.sql_service import execute_query
 from fastapi import HTTPException
 
@@ -26,6 +27,9 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
             "row_count": 0,
             "summary": None,
         }
+
+    if intent == "similar_cases":
+        return handle_similar_case_query(db, question)
 
     if intent == "unsupported" or not sql:
         return {
