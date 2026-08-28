@@ -71,8 +71,13 @@ def _generate(model, prompt: str):
 def classify_and_generate_sql(user_question: str, conversation_history: list[dict] = None) -> dict:
     """
     Single combined call: classifies intent AND (if applicable) generates SQL
-    in one round trip, instead of two separate Gemini calls. Returns:
-    {"intent": ..., "sql": ... or None}
+    in one round trip. Also detects whether the question ALSO needs semantic
+    similar-case retrieval alongside the SQL (a "hybrid" question), e.g.
+    "find cases like this AND tell me how many total drug cases happened
+    in Shivamogga" — needs both narrative similarity search and an aggregate
+    SQL count in one answer.
+
+    Returns: {"intent": ..., "sql": ... or None, "also_retrieve_similar": bool}
     """
     model = _get_model()
 
@@ -101,8 +106,15 @@ If intent is "query", "analytics", or "prediction", also generate the PostgreSQL
 that answers it, following the RULES above. If intent is "similar_cases", "greeting", or
 "unsupported", or if the question cannot be answered with this schema, set "sql" to null.
 
+ADDITIONALLY: set "also_retrieve_similar" to true ONLY if intent is "query", "analytics",
+or "prediction" AND the question ALSO separately asks to find narratively similar past
+cases (e.g. "...and have we seen anything like this before", "...also find comparable
+cases"). This is for HYBRID questions that need both a SQL answer AND a similarity
+search. Otherwise set it to false. Do not set this true for "similar_cases" intent
+itself — that's handled separately.
+
 Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
-{{"intent": "<one of the categories above>", "sql": "<SQL string or null>"}}"""
+{{"intent": "<one of the categories above>", "sql": "<SQL string or null>", "also_retrieve_similar": <true or false>}}"""
 
     response = _generate(model, prompt)
     raw = response.text.strip()
@@ -112,7 +124,7 @@ Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
         parsed = json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         # Model didn't return clean JSON — fail safe rather than crash the request.
-        return {"intent": "query", "sql": None}
+        return {"intent": "query", "sql": None, "also_retrieve_similar": False}
 
     intent = str(parsed.get("intent", "query")).lower()
     valid = {"query", "analytics", "prediction", "similar_cases", "greeting", "unsupported"}
@@ -123,7 +135,11 @@ Respond with ONLY raw JSON (no markdown, no backticks), in exactly this shape:
     if sql:
         sql = re.sub(r"```sql|```", "", str(sql)).strip()
 
-    return {"intent": intent, "sql": sql}
+    also_retrieve_similar = bool(parsed.get("also_retrieve_similar", False))
+    if intent == "similar_cases":
+        also_retrieve_similar = False  # avoid double-retrieval
+
+    return {"intent": intent, "sql": sql, "also_retrieve_similar": also_retrieve_similar}
 
 def natural_language_to_sql(user_question: str, conversation_history: list[dict] = None) -> str:
     """Kept for any direct callers — now just delegates to the combined call."""
