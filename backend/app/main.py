@@ -2,12 +2,12 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .database import test_connection, engine, Base
-from .routes import auth, query, analytics, export
+from .routes import auth, query, analytics, export, conversations
 from .services.sql_service import get_schema_summary
 from .database import SessionLocal
 
 # Import models so SQLAlchemy creates the tables
-from .models import user, crime  # noqa
+from .models import user, crime, conversation  # noqa
 
 settings = get_settings()
 
@@ -43,6 +43,7 @@ app.include_router(auth.router)
 app.include_router(query.router)
 app.include_router(analytics.router)
 app.include_router(export.router)
+app.include_router(conversations.router)
 
 
 @app.on_event("startup")

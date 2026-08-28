@@ -2,17 +2,38 @@ from sqlalchemy.orm import Session
 from ..services.gemini_service import classify_and_generate_sql, summarize_results, GeminiQuotaExceeded
 from ..services.rag_service import handle_similar_case_query, find_similar_cases, summarize_hybrid_results
 from ..services.sql_service import execute_query
+from ..controllers import conversation_controller as cc
 from fastapi import HTTPException
 
-def handle_query(db: Session, question: str, conversation_history: list[dict] = None) -> dict:
+def handle_query(
+    db: Session, question: str, conversation_history: list[dict] = None,
+    user_id: int = None, conversation_id: int = None,
+) -> dict:
     """
     Full pipeline: NL question → SQL → execute → summarize → return.
-    Intent classification + SQL generation happen in a single Gemini call
-    to conserve free-tier request quota.
-
-    Also supports "hybrid" questions that need both a SQL answer AND a
-    narrative similarity search (see also_retrieve_similar flag).
+    Also persists the exchange to a conversation (creating one if
+    conversation_id wasn't supplied) so chat history can be listed/reloaded.
     """
+    if user_id is not None:
+        if conversation_id is None:
+            title = cc.make_title_from_question(question)
+            convo = cc.create_conversation(db, user_id, title=title)
+            conversation_id = convo.id
+        cc.add_message(db, conversation_id, role="user", content=question)
+
+    result = _run_pipeline(db, question, conversation_history)
+    result["conversation_id"] = conversation_id
+
+    if user_id is not None and conversation_id is not None:
+        cc.add_message(
+            db, conversation_id, role="assistant",
+            content=result.get("message") or result.get("summary") or "",
+            response_data=result,
+        )
+
+    return result
+
+def _run_pipeline(db: Session, question: str, conversation_history: list[dict] = None) -> dict:
     try:
         classification = classify_and_generate_sql(question, conversation_history)
     except GeminiQuotaExceeded as e:
@@ -45,7 +66,6 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
             "summary": None,
         }
 
-    # Execute SQL safely
     try:
         results, row_count = execute_query(db, sql)
     except ValueError as e:
@@ -53,7 +73,6 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-    # Hybrid path: also run a similarity search and combine both into one answer
     if also_retrieve_similar:
         similar_matches = find_similar_cases(db, question, k=5)
         summary = summarize_hybrid_results(question, results, row_count, similar_matches)
@@ -67,7 +86,6 @@ def handle_query(db: Session, question: str, conversation_history: list[dict] = 
             "summary": summary,
         }
 
-    # Normal path: summarize with AI (degrades gracefully to a templated summary on quota errors)
     summary = summarize_results(question, sql, results, row_count)
 
     return {

@@ -12,6 +12,7 @@ router = APIRouter(prefix="/query", tags=["Query"])
 class QueryRequest(BaseModel):
     question: str
     conversation_history: Optional[list[dict]] = []
+    conversation_id: Optional[int] = None
 
 @router.post("/")
 def run_query(
@@ -19,4 +20,7 @@ def run_query(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return query_controller.handle_query(db, body.question, body.conversation_history)
+    return query_controller.handle_query(
+        db, body.question, body.conversation_history,
+        user_id=current_user.id, conversation_id=body.conversation_id,
+    )
