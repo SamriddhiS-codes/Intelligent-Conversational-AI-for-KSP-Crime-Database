@@ -1,5 +1,6 @@
 import os
 os.environ.setdefault("USE_TF", "0")  # avoid transformers trying (and failing) to import TensorFlow
+import json
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -102,3 +103,46 @@ def handle_similar_case_query(db: Session, question: str) -> dict:
         "row_count": len(matches),
         "summary": summary,
     }
+def summarize_hybrid_results(user_question: str, sql_results: list[dict], sql_row_count: int, similar_matches: list[dict]) -> str:
+    """
+    Combine a SQL query's results with semantically similar past cases into
+    ONE grounded answer, for questions that ask for both (e.g. "how many
+    drug cases in Shivamogga, and have we seen anything like this before").
+    """
+    sql_summary_part = f"The database query returned {sql_row_count} matching record(s)."
+    if sql_results:
+        preview = sql_results[:5]
+        sql_summary_part += " Sample of the results: " + json.dumps(preview, default=str)
+
+    if similar_matches:
+        cases_text = "\n\n".join(
+            f"Case {m['fir_number']} ({m['crime_type']}, {m['district']}, "
+            f"status: {m['case_status']}): {m['case_narrative']}"
+            for m in similar_matches
+        )
+        similar_part = f"\n\nSeparately, here are the {len(similar_matches)} most narratively similar past cases:\n\n{cases_text}"
+    else:
+        similar_part = "\n\nNo narratively similar past cases were found."
+
+    prompt = f"""A police investigator asked: "{user_question}"
+
+This question needs two things answered together:
+
+1. STRUCTURED DATA RESULT:
+{sql_summary_part}
+
+2. SIMILAR PAST CASES:{similar_part}
+
+Write a single, clear answer (5-8 sentences) that addresses BOTH parts of the
+investigator's question. Be factual and grounded only in the data shown above
+— do not invent numbers or details that aren't present."""
+
+    model = genai.GenerativeModel("gemini-3.1-flash-lite")
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception:
+        return (
+            f"{sql_summary_part} Additionally, found {len(similar_matches)} "
+            f"narratively similar past cases (see below). AI summary is temporarily unavailable."
+        )
