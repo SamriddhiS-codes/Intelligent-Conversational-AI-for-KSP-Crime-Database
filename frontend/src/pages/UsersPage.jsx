@@ -17,7 +17,7 @@ export function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await client.get("/auth/users");
+      const res = await client.get("/api/auth/users");
       setUsers(res.data);
     } catch {
       setUsers([]);
@@ -29,7 +29,7 @@ export function UsersPage() {
   const handleCreate = async () => {
     setError(""); setSuccess("");
     try {
-      await client.post("/auth/register", form);
+      await client.post("/api/auth/register", form); 
       setSuccess(`User "${form.username}" created successfully!`);
       setForm({ username: "", email: "", password: "", role: "investigator" });
       setShowForm(false);
