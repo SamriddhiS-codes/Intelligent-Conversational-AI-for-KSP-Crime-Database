@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldHalf, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -20,7 +22,7 @@ export function LoginPage() {
       await login(username, password);
       navigate("/");
     } catch (err) {
-      setError(err?.response?.data?.detail || "Invalid credentials.");
+      setError(err?.response?.data?.detail || t("login.invalidCredentials"));
     } finally {
       setLoading(false);
     }
@@ -38,14 +40,14 @@ export function LoginPage() {
           <div className="w-11 h-11 rounded-full bg-highlight/50 flex items-center justify-center mb-4">
             <ShieldHalf className="w-5 h-5 text-accent" strokeWidth={1.75} />
           </div>
-          <h1 className="text-lg font-semibold text-ink">KSP Intelligence AI</h1>
-          <p className="text-sm text-ink-muted mt-1">Authorized personnel only</p>
+          <h1 className="text-lg font-semibold text-ink">{t("login.title")}</h1>
+          <p className="text-sm text-ink-muted mt-1">{t("login.subtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-medium text-ink-muted mb-1.5 block">
-              Username
+              {t("login.username")}
             </label>
             <input
               value={username}
@@ -57,7 +59,7 @@ export function LoginPage() {
           </div>
           <div>
             <label className="text-xs font-medium text-ink-muted mb-1.5 block">
-              Password
+              {t("login.password")}
             </label>
             <input
               type="password"
@@ -77,7 +79,7 @@ export function LoginPage() {
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-60"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Sign in
+            {t("login.signIn")}
           </button>
         </form>
       </motion.div>
