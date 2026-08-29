@@ -1,0 +1,263 @@
+{
+  "app": {
+    "title": "KSP Intelligence AI"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "aiWorkspace": "AI Workspace",
+    "firSearch": "FIR Search",
+    "criminalNetwork": "Criminal Network",
+    "hotspotMap": "Hotspot Map",
+    "reports": "Reports",
+    "analytics": "Analytics",
+    "userManagement": "User Management",
+    "settings": "Settings",
+    "logOut": "Log out"
+  },
+  "role": {
+    "admin": "Admin",
+    "investigator": "Investigator",
+    "analyst": "Analyst"
+  },
+  "login": {
+    "title": "KSP Intelligence AI",
+    "subtitle": "Authorized personnel only",
+    "username": "Username",
+    "password": "Password",
+    "signIn": "Sign in",
+    "invalidCredentials": "Invalid credentials."
+  },
+  "home": {
+    "title": "KSP Intelligence AI",
+    "subtitle": "AI-powered Investigation Workspace",
+    "generatingWorkspace": "Generating your investigation workspace…"
+  },
+  "hero": {
+    "placeholderCompact": "Ask another question…",
+    "examples": [
+      "Find FIR KA-2025-01932",
+      "Which districts had the most robberies last year?",
+      "Show repeat offenders linked to extortion cases in Belagavi",
+      "Predict which districts are at rising risk this month"
+    ]
+  },
+  "quickActions": {
+    "crimePattern": {
+      "title": "Crime Pattern Analysis",
+      "desc": "Surface recurring patterns across crime types and districts."
+    },
+    "hotspotTrend": {
+      "title": "Hotspot & Trend Detection",
+      "desc": "See where and when incidents are concentrating."
+    },
+    "criminalNetwork": {
+      "title": "Criminal Network Explorer",
+      "desc": "Trace connections between accused persons and crime types."
+    },
+    "predictiveRisk": {
+      "title": "Predictive Risk Signals",
+      "desc": "Early-warning signals based on recent trend movement."
+    },
+    "generateReport": {
+      "title": "Generate Report",
+      "desc": "Export the current workspace as an official PDF report."
+    },
+    "districtStats": {
+      "title": "District Statistics",
+      "desc": "Compare case load, severity and closure rate by district."
+    }
+  },
+  "workspace": {
+    "eyebrow": "Investigation Workspace",
+    "emptyTitle": "AI Workspace",
+    "emptySubtitle": "Ask any question about Karnataka crime data",
+    "supportsLanguages": "Supports English and ಕನ್ನಡ",
+    "analyzing": "Analyzing crime data...",
+    "matchingRecords": "Matching Records"
+  },
+  "summaryCard": {
+    "eyebrow": "Executive Summary",
+    "basedOnRecords_one": "Based on {{count}} matching record.",
+    "basedOnRecords_other": "Based on {{count}} matching records."
+  },
+  "explainability": {
+    "heading": "How the AI reached this",
+    "detectedIntent": "Detected intent",
+    "queriedBy": "Queried by",
+    "timestamp": "Timestamp",
+    "generatedSql": "Generated SQL"
+  },
+  "statisticsCard": {
+    "eyebrow": "Statistics",
+    "byLabel": "By {{label}}"
+  },
+  "timelineCard": {
+    "eyebrow": "Trend Detection",
+    "monthlyTrend": "Monthly crime trend",
+    "monthlyTrendDistrict": "Monthly trend · {{district}}"
+  },
+  "hotspotMapCard": {
+    "eyebrow": "Hotspot Detection",
+    "title": "Highest-concentration locations"
+  },
+  "crimeNetworkCard": {
+    "eyebrow": "Criminal Network Explorer",
+    "title": "Accused ↔ crime-type connections",
+    "crimeType": "Crime type",
+    "accusedPerson": "Accused person"
+  },
+  "predictiveSignal": {
+    "eyebrow": "Early Warning Signal",
+    "title": "Rising-risk crime types",
+    "heuristicSignal": "Heuristic signal",
+    "risk": {
+      "High": "High",
+      "Medium": "Medium",
+      "Low": "Low"
+    },
+    "disclaimer": "Based on recent vs. prior 2-month movement in reported counts. Intended as an early-stage signal for investigator attention, not a validated forecast."
+  },
+  "reportExport": {
+    "preparing": "Preparing report…",
+    "generate": "Generate PDF Report"
+  },
+  "analyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Crime trends and district comparisons across Karnataka",
+    "loading": "Loading analytics...",
+    "crimeTypeDistribution": "Crime Type Distribution",
+    "topDistricts": "Top Districts by Crime Count",
+    "trendsOverTime": "Crime Trends Over Time",
+    "districtSummary": "District Summary",
+    "table": {
+      "district": "District",
+      "total": "Total",
+      "highSeverity": "High Severity",
+      "openCases": "Open Cases",
+      "avgLoss": "Avg Loss (₹)"
+    }
+  },
+  "firSearchPage": {
+    "title": "FIR Search",
+    "subtitle": "Search crime records using natural language",
+    "placeholder": "e.g. \"robbery cases in Mysuru in 2023\" or \"accused named Raju\"",
+    "searching": "Searching...",
+    "search": "Search",
+    "quickSearches": "Quick searches:",
+    "searchFailed": "Search failed. Please try again.",
+    "recordsFound_one": "{{count}} record found",
+    "recordsFound_other": "{{count}} records found",
+    "noRecordsFound": "No records found",
+    "quick": {
+      "accusedKumar": "accused name contains Kumar",
+      "murderMysuru": "crime type is Murder and district is Mysuru",
+      "underInvestigation": "case status is Under Investigation",
+      "weaponKnife": "weapon used is Knife",
+      "juvenileInvolved": "is juvenile involved",
+      "bengaluruHigh": "district is Bengaluru Urban and severity is High"
+    }
+  },
+  "hotspotPage": {
+    "title": "Hotspot Map",
+    "subtitle": "Crime concentration across Karnataka districts",
+    "legend": {
+      "high": "High (50+)",
+      "medium": "Medium (20-50)",
+      "low": "Low (<20)"
+    },
+    "loadingMap": "Loading hotspot data...",
+    "topHotspots": "Top Crime Hotspots",
+    "table": {
+      "rank": "Rank",
+      "district": "District",
+      "policeStation": "Police Station",
+      "crimeType": "Crime Type",
+      "count": "Count"
+    }
+  },
+  "networkPage": {
+    "title": "Criminal Network",
+    "subtitle": "Visualize connections between accused persons and crime types",
+    "allCrimeTypes": "All Crime Types",
+    "allDistricts": "All Districts",
+    "apply": "Apply",
+    "loading": "Loading...",
+    "legend": {
+      "accusedPerson": "Accused Person",
+      "crimeType": "Crime Type"
+    },
+    "loadingNetwork": "Loading network...",
+    "noData": "No data available",
+    "stats": {
+      "accusedPersons": "Accused Persons",
+      "crimeCategories": "Crime Categories",
+      "connections": "Connections"
+    }
+  },
+  "reportsPage": {
+    "title": "Reports",
+    "subtitle": "Export official crime intelligence reports as PDF",
+    "downloadSuccess": "Report downloaded successfully!",
+    "generating": "Generating...",
+    "exportPdf": "Export PDF",
+    "proTip": "Pro tip",
+    "proTipText": "You can also export any AI query result as a PDF directly from the AI Workspace page. Just ask a question and click \"Generate PDF Report\" at the bottom of the results.",
+    "types": {
+      "crimeSummary": {
+        "title": "Crime Summary Report",
+        "desc": "Overall crime statistics across all Karnataka districts"
+      },
+      "hotspotAnalysis": {
+        "title": "Hotspot Analysis",
+        "desc": "Top crime concentration zones with location data"
+      },
+      "districtComparison": {
+        "title": "District Comparison",
+        "desc": "Side-by-side district performance metrics"
+      },
+      "networkReport": {
+        "title": "Criminal Network Report",
+        "desc": "Accused persons and their crime connections"
+      },
+      "trendAnalysis": {
+        "title": "Trend Analysis",
+        "desc": "Monthly and yearly crime trend patterns"
+      },
+      "caseStatus": {
+        "title": "Case Status Report",
+        "desc": "Open, closed and pending cases breakdown"
+      }
+    }
+  },
+  "usersPage": {
+    "title": "User Management",
+    "subtitle": "Manage investigator and analyst accounts",
+    "newUser": "+ New User",
+    "createNewUser": "Create New User",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "usernamePlaceholder": "e.g. officer_raju",
+    "emailPlaceholder": "officer@ksp.gov.in",
+    "passwordPlaceholder": "Min 8 characters",
+    "createUser": "Create User",
+    "cancel": "Cancel",
+    "loadingUsers": "Loading users...",
+    "userCount_one": "{{count}} user",
+    "userCount_other": "{{count}} users",
+    "userCreated": "User \"{{username}}\" created successfully!",
+    "createFailed": "Failed to create user",
+    "defaultUsersNote": "Default users: admin, investigator, analyst",
+    "newUserHint": "Use \"+ New User\" to create additional accounts",
+    "table": {
+      "username": "Username",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "created": "Created"
+    },
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}
