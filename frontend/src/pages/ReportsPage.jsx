@@ -66,7 +66,7 @@ export function ReportsPage() {
   ];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-ink mb-1">{t("reportsPage.title")}</h1>
       <p className="text-ink-muted text-sm mb-8">{t("reportsPage.subtitle")}</p>
 
@@ -82,7 +82,7 @@ export function ReportsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         {REPORT_TYPE_DEFS.map(r => (
           <div key={r.key} className="bg-card rounded-2xl border border-border p-5 hover:border-accent/30 transition-colors">
             <div className="text-2xl mb-3">{r.icon}</div>

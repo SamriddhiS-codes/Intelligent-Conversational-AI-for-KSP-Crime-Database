@@ -45,11 +45,11 @@ export function AnalyticsPage() {
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-ink mb-1">{t("analyticsPage.title")}</h1>
       <p className="text-ink-muted text-sm mb-8">{t("analyticsPage.subtitle")}</p>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-card rounded-2xl p-6 border border-border">
           <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.crimeTypeDistribution")}</h3>
           <ResponsiveContainer width="100%" height={220}>
@@ -95,8 +95,8 @@ export function AnalyticsPage() {
 
       <div className="bg-card rounded-2xl p-6 border border-border">
         <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.districtSummary")}</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-sm min-w-[560px]">
             <thead>
               <tr className="bg-bg-secondary">
                 {tableHeaders.map(h => (

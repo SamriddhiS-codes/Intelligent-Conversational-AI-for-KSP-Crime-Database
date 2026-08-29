@@ -57,8 +57,8 @@ export function UsersPage() {
   ];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="flex justify-between items-start mb-8">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-ink mb-1">{t("usersPage.title")}</h1>
           <p className="text-ink-muted text-sm">{t("usersPage.subtitle")}</p>
@@ -79,7 +79,7 @@ export function UsersPage() {
       {showForm && (
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
           <h3 className="font-semibold text-ink mb-4">{t("usersPage.createNewUser")}</h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="text-xs font-medium text-ink-muted mb-1 block">{t("usersPage.username")}</label>
               <input value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
@@ -130,8 +130,8 @@ export function UsersPage() {
             <p className="text-xs mt-1">{t("usersPage.newUserHint")}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full text-sm min-w-[560px]">
               <thead>
                 <tr className="bg-bg-secondary">
                   {tableHeaders.map(h => (
