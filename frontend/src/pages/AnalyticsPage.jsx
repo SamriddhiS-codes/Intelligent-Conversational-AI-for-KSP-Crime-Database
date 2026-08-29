@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getByDistrict, getCrimeTypes, getTrends } from "../lib/api";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -8,6 +9,7 @@ import {
 const COLORS = ["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#ec4899"];
 
 export function AnalyticsPage() {
+  const { t } = useTranslation();
   const [districts, setDistricts] = useState([]);
   const [crimeTypes, setCrimeTypes] = useState([]);
   const [trends, setTrends] = useState([]);
@@ -32,16 +34,24 @@ export function AnalyticsPage() {
 
   const topCrimeTypes = [...new Set(trends.flatMap(t => Object.keys(t).filter(k => k !== "period")))].slice(0, 4);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-ink-muted">Loading analytics...</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-ink-muted">{t("analyticsPage.loading")}</div>;
+
+  const tableHeaders = [
+    t("analyticsPage.table.district"),
+    t("analyticsPage.table.total"),
+    t("analyticsPage.table.highSeverity"),
+    t("analyticsPage.table.openCases"),
+    t("analyticsPage.table.avgLoss"),
+  ];
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-ink mb-1">Analytics</h1>
-      <p className="text-ink-muted text-sm mb-8">Crime trends and district comparisons across Karnataka</p>
+      <h1 className="text-2xl font-bold text-ink mb-1">{t("analyticsPage.title")}</h1>
+      <p className="text-ink-muted text-sm mb-8">{t("analyticsPage.subtitle")}</p>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <h3 className="text-sm font-semibold text-ink mb-4">Crime Type Distribution</h3>
+          <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.crimeTypeDistribution")}</h3>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={crimeTypes} dataKey="count" nameKey="crime_type" cx="50%" cy="50%" outerRadius={80}>
@@ -54,7 +64,7 @@ export function AnalyticsPage() {
         </div>
 
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <h3 className="text-sm font-semibold text-ink mb-4">Top Districts by Crime Count</h3>
+          <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.topDistricts")}</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={districts} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -68,7 +78,7 @@ export function AnalyticsPage() {
       </div>
 
       <div className="bg-card rounded-2xl p-6 border border-border mb-6">
-        <h3 className="text-sm font-semibold text-ink mb-4">Crime Trends Over Time</h3>
+        <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.trendsOverTime")}</h3>
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={trends}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -84,12 +94,12 @@ export function AnalyticsPage() {
       </div>
 
       <div className="bg-card rounded-2xl p-6 border border-border">
-        <h3 className="text-sm font-semibold text-ink mb-4">District Summary</h3>
+        <h3 className="text-sm font-semibold text-ink mb-4">{t("analyticsPage.districtSummary")}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-bg-secondary">
-                {["District","Total","High Severity","Open Cases","Avg Loss (₹)"].map(h => (
+                {tableHeaders.map(h => (
                   <th key={h} className="text-left p-3 text-ink-muted font-medium">{h}</th>
                 ))}
               </tr>
