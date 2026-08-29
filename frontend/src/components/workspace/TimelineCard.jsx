@@ -8,10 +8,12 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 import { Card, CardTitle } from "../common/Card";
 import { getTrends } from "../../lib/api";
 
 export function TimelineCard({ district, delay = 0 }) {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,8 +45,12 @@ export function TimelineCard({ district, delay = 0 }) {
   return (
     <Card delay={delay}>
       <CardTitle
-        eyebrow="Trend Detection"
-        title={district ? `Monthly trend · ${district}` : "Monthly crime trend"}
+        eyebrow={t("timelineCard.eyebrow")}
+        title={
+          district
+            ? t("timelineCard.monthlyTrendDistrict", { district })
+            : t("timelineCard.monthlyTrend")
+        }
       />
       <div className="h-56 -ml-4">
         <ResponsiveContainer width="100%" height="100%">
