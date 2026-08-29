@@ -51,8 +51,8 @@ export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
       <motion.div
         layout
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={`flex items-center gap-3 bg-card border border-border rounded-full shadow-soft transition-shadow focus-within:shadow-softLift ${
-          compact ? "px-4 py-2" : "px-6 py-4"
+        className={`flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 bg-card border border-border rounded-full shadow-soft transition-shadow focus-within:shadow-softLift ${
+          compact ? "px-3 sm:px-4 py-2" : "px-4 sm:px-6 py-3 sm:py-4"
         }`}
       >
         <Search
@@ -67,11 +67,15 @@ export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
           placeholder={
             compact ? t("hero.placeholderCompact") : examples[placeholderIndex]
           }
-          className={`flex-1 bg-transparent outline-none text-ink placeholder:text-ink-muted ${
-            compact ? "text-sm" : "text-lg"
+          className={`flex-1 min-w-[80px] bg-transparent outline-none text-ink placeholder:text-ink-muted ${
+            compact ? "text-sm" : "text-base sm:text-lg"
           } ${language === "kn" ? "font-kannada" : ""}`}
         />
-        {!compact && <LanguageToggle language={language} onChange={setLanguage} />}
+        {!compact && (
+          <div className="order-4 sm:order-none w-full sm:w-auto flex justify-center sm:block">
+            <LanguageToggle language={language} onChange={setLanguage} />
+          </div>
+        )}
         <VoiceInputButton
           isListening={isListening}
           supported={supported}
@@ -81,10 +85,10 @@ export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
           type="submit"
           aria-label="Submit"
           className={`shrink-0 flex items-center justify-center rounded-full bg-accent text-white hover:bg-accent-hover transition-colors ${
-            compact ? "w-8 h-8" : "w-11 h-11"
+            compact ? "w-8 h-8" : "w-9 h-9 sm:w-11 sm:h-11"
           }`}
         >
-          <ArrowRight className={compact ? "w-4 h-4" : "w-5 h-5"} strokeWidth={2} />
+          <ArrowRight className={compact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"} strokeWidth={2} />
         </button>
       </motion.div>
     </form>

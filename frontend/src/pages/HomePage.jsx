@@ -12,7 +12,7 @@ export function HomePage() {
   if (workspace) return <WorkspacePage />;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4 sm:px-6">
       <AnimatePresence>
         {loading ? (
           <motion.div
@@ -34,10 +34,10 @@ export function HomePage() {
             exit={{ opacity: 0 }}
             className="w-full flex flex-col items-center"
           >
-            <h1 className="text-4xl font-semibold text-ink mb-2 tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-semibold text-ink mb-2 tracking-tight text-center">
               {t("home.title")}
             </h1>
-            <p className="text-ink-muted mb-10">
+            <p className="text-ink-muted mb-8 sm:mb-10 text-sm sm:text-base text-center px-2">
               {t("home.subtitle")}
             </p>
 
