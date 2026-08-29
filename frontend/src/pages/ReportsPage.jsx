@@ -1,8 +1,10 @@
 //report page for exporting official crime intelligence reports as PDF
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { exportPdf } from "../lib/api";
 
 export function ReportsPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
@@ -54,23 +56,23 @@ export function ReportsPage() {
     }
   };
 
-  const REPORT_TYPES = [
-    { title: "Crime Summary Report", desc: "Overall crime statistics across all Karnataka districts", icon: "📊" },
-    { title: "Hotspot Analysis", desc: "Top crime concentration zones with location data", icon: "🗺️" },
-    { title: "District Comparison", desc: "Side-by-side district performance metrics", icon: "📋" },
-    { title: "Criminal Network Report", desc: "Accused persons and their crime connections", icon: "🕸️" },
-    { title: "Trend Analysis", desc: "Monthly and yearly crime trend patterns", icon: "📈" },
-    { title: "Case Status Report", desc: "Open, closed and pending cases breakdown", icon: "⚖️" },
+  const REPORT_TYPE_DEFS = [
+    { key: "crimeSummary", icon: "📊" },
+    { key: "hotspotAnalysis", icon: "🗺️" },
+    { key: "districtComparison", icon: "📋" },
+    { key: "networkReport", icon: "🕸️" },
+    { key: "trendAnalysis", icon: "📈" },
+    { key: "caseStatus", icon: "⚖️" },
   ];
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold text-ink mb-1">Reports</h1>
-      <p className="text-ink-muted text-sm mb-8">Export official crime intelligence reports as PDF</p>
+      <h1 className="text-2xl font-bold text-ink mb-1">{t("reportsPage.title")}</h1>
+      <p className="text-ink-muted text-sm mb-8">{t("reportsPage.subtitle")}</p>
 
       {success && (
         <div className="bg-green-50 text-green-700 rounded-xl p-4 mb-6 text-sm flex items-center gap-2">
-          ✅ Report downloaded successfully!
+          ✅ {t("reportsPage.downloadSuccess")}
         </div>
       )}
 
@@ -81,24 +83,23 @@ export function ReportsPage() {
       )}
 
       <div className="grid grid-cols-2 gap-4 mb-8">
-        {REPORT_TYPES.map(r => (
-          <div key={r.title} className="bg-card rounded-2xl border border-border p-5 hover:border-accent/30 transition-colors">
+        {REPORT_TYPE_DEFS.map(r => (
+          <div key={r.key} className="bg-card rounded-2xl border border-border p-5 hover:border-accent/30 transition-colors">
             <div className="text-2xl mb-3">{r.icon}</div>
-            <h3 className="font-semibold text-ink text-sm mb-1">{r.title}</h3>
-            <p className="text-xs text-ink-muted mb-4">{r.desc}</p>
+            <h3 className="font-semibold text-ink text-sm mb-1">{t(`reportsPage.types.${r.key}.title`)}</h3>
+            <p className="text-xs text-ink-muted mb-4">{t(`reportsPage.types.${r.key}.desc`)}</p>
             <button onClick={handleExport} disabled={loading}
               className="text-xs text-accent font-medium border border-accent/30 rounded-lg px-3 py-1.5 hover:bg-accent/5 disabled:opacity-60">
-              {loading ? "Generating..." : "Export PDF"}
+              {loading ? t("reportsPage.generating") : t("reportsPage.exportPdf")}
             </button>
           </div>
         ))}
       </div>
 
       <div className="bg-highlight/30 rounded-2xl border border-accent/20 p-6">
-        <h3 className="font-semibold text-ink text-sm mb-2">📌 Pro tip</h3>
+        <h3 className="font-semibold text-ink text-sm mb-2">📌 {t("reportsPage.proTip")}</h3>
         <p className="text-xs text-ink-muted">
-          You can also export any AI query result as a PDF directly from the AI Workspace page.
-          Just ask a question and click "Generate PDF Report" at the bottom of the results.
+          {t("reportsPage.proTipText")}
         </p>
       </div>
     </div>
