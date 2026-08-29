@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardTitle } from "../common/Card";
 import { getTrends } from "../../lib/api";
 
@@ -44,6 +45,7 @@ function computeSignals(rows) {
 }
 
 export function PredictiveSignalCard({ district, delay = 0 }) {
+  const { t } = useTranslation();
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,12 +61,12 @@ export function PredictiveSignalCard({ district, delay = 0 }) {
   return (
     <Card delay={delay}>
       <CardTitle
-        eyebrow="Early Warning Signal"
-        title="Rising-risk crime types"
+        eyebrow={t("predictiveSignal.eyebrow")}
+        title={t("predictiveSignal.title")}
         action={
           <span className="flex items-center gap-1 text-[11px] text-ink-muted">
             <AlertTriangle className="w-3.5 h-3.5" strokeWidth={1.75} />
-            Heuristic signal
+            {t("predictiveSignal.heuristicSignal")}
           </span>
         }
       />
@@ -83,7 +85,7 @@ export function PredictiveSignalCard({ district, delay = 0 }) {
               <span
                 className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${RISK_STYLES[risk]}`}
               >
-                {risk} · {delta >= 0 ? "+" : ""}
+                {t(`predictiveSignal.risk.${risk}`)} · {delta >= 0 ? "+" : ""}
                 {Math.round(delta * 100)}%
               </span>
             </div>
@@ -91,8 +93,7 @@ export function PredictiveSignalCard({ district, delay = 0 }) {
         })}
       </div>
       <p className="text-[11px] text-ink-muted mt-4">
-        Based on recent vs. prior 2-month movement in reported counts. Intended as an
-        early-stage signal for investigator attention, not a validated forecast.
+        {t("predictiveSignal.disclaimer")}
       </p>
     </Card>
   );

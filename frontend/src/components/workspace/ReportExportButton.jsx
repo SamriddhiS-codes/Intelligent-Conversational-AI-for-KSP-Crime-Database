@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { FileDown, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { exportPdf } from "../../lib/api";
 
 export function ReportExportButton({ conversation, queryResults }) {
+  const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
 
   const handleExport = async () => {
@@ -35,7 +37,7 @@ export function ReportExportButton({ conversation, queryResults }) {
       ) : (
         <FileDown className="w-4 h-4" strokeWidth={1.75} />
       )}
-      {downloading ? "Preparing report…" : "Generate PDF Report"}
+      {downloading ? t("reportExport.preparing") : t("reportExport.generate")}
     </button>
   );
 }
