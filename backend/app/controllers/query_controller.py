@@ -4,6 +4,10 @@ from ..services.rag_service import handle_similar_case_query, find_similar_cases
 from ..services.sql_service import execute_query
 from ..controllers import conversation_controller as cc
 from fastapi import HTTPException
+import json
+
+def _json_safe(data):
+    return json.loads(json.dumps(data, default=str))
 
 def handle_query(
     db: Session, question: str, conversation_history: list[dict] = None,
@@ -28,7 +32,7 @@ def handle_query(
         cc.add_message(
             db, conversation_id, role="assistant",
             content=result.get("message") or result.get("summary") or "",
-            response_data=result,
+            response_data=_json_safe(result),
         )
 
     return result
