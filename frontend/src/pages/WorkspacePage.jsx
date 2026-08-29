@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useWorkspace } from "../context/WorkspaceContext";
 import { WorkspaceHeader } from "../components/workspace/WorkspaceHeader";
 import { SummaryCard } from "../components/workspace/SummaryCard";
@@ -39,6 +40,8 @@ function QueryBlock({ entry }) {
   const wantsPrediction = intent === "prediction";
   const wantsDistrictBreakdown = intent === "analytics" && !wantsHotspot && !wantsNetwork;
 
+  const { t } = useTranslation();
+
   return (
     <div className="mb-10">
       <div className="flex justify-end mb-4">
@@ -64,7 +67,7 @@ function QueryBlock({ entry }) {
             {isRecordLike && (
               <div className="lg:col-span-2">
                 <p className="text-xs font-medium tracking-wide uppercase text-ink-muted mb-3">
-                  Matching Records
+                  {t("workspace.matchingRecords")}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {results.slice(0, 30).map((r, i) => (
@@ -91,6 +94,7 @@ function QueryBlock({ entry }) {
 }
 
 export function WorkspacePage() {
+  const { t } = useTranslation();
   const { chatEntries, loading, error, ask, history, workspace } = useWorkspace();
   const bottomRef = useRef(null);
 
@@ -105,9 +109,9 @@ export function WorkspacePage() {
         {/* Empty state */}
         {!chatEntries?.length && !loading && (
           <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-            <p className="text-2xl font-semibold text-ink mb-2">AI Workspace</p>
-            <p className="text-ink-muted text-sm mb-1">Ask any question about Karnataka crime data</p>
-            <p className="text-ink-muted text-xs">Supports English and ಕನ್ನಡ</p>
+            <p className="text-2xl font-semibold text-ink mb-2">{t("workspace.emptyTitle")}</p>
+            <p className="text-ink-muted text-sm mb-1">{t("workspace.emptySubtitle")}</p>
+            <p className="text-ink-muted text-xs">{t("workspace.supportsLanguages")}</p>
           </div>
         )}
 
@@ -121,7 +125,7 @@ export function WorkspacePage() {
               <span className="animate-pulse">●</span>
               <span className="animate-pulse delay-100">●</span>
               <span className="animate-pulse delay-200">●</span>
-              <span className="ml-2">Analyzing crime data...</span>
+              <span className="ml-2">{t("workspace.analyzing")}</span>
             </div>
           </div>
         )}
