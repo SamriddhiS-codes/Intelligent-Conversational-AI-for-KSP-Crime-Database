@@ -6,7 +6,7 @@ export function Card({ children, className = "", delay = 0, as: Comp = "div" }) 
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={`bg-card border border-border rounded-card shadow-soft p-7 ${className}`}
+      className={`bg-card border border-border rounded-card shadow-soft p-5 sm:p-7 ${className}`}
     >
       {children}
     </motion.div>

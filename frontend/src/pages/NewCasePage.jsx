@@ -46,7 +46,7 @@ export function NewCasePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-10">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <h1 className="text-2xl font-semibold text-ink mb-1">Log New Case</h1>
       <p className="text-sm text-ink-muted mb-6">
         The case narrative below is embedded immediately, so it's searchable
@@ -73,7 +73,7 @@ export function NewCasePage() {
       )}
 
       <form onSubmit={submit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="FIR Number">
             <input
               required
