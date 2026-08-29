@@ -12,6 +12,7 @@ import {
   LogOut,
   Users,
   Map,
+  FilePlus2,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -19,6 +20,7 @@ const ITEM_DEFS = [
   { to: "/", icon: LayoutGrid, key: "dashboard" },
   { to: "/workspace", icon: Sparkles, key: "aiWorkspace" },
   { to: "/fir-search", icon: FileSearch, key: "firSearch" },
+  { to: "/new-case", icon: FilePlus2, key: "logNewCase" },
   { to: "/network", icon: Network, key: "criminalNetwork" },
   { to: "/hotspots", icon: Map, key: "hotspotMap" },
   { to: "/reports", icon: FileText, key: "reports" },

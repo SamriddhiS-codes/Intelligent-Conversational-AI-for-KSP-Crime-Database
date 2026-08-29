@@ -12,7 +12,8 @@
     "analytics": "Analytics",
     "userManagement": "User Management",
     "settings": "Settings",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "logNewCase": "Log New Case"
   },
   "role": {
     "admin": "Admin",

@@ -13,6 +13,7 @@ import { HotspotPage } from "./pages/HotspotPage";
 import { FIRSearchPage } from "./pages/FIRSearchPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { NewCasePage } from "./pages/NewCasePage";
 
 function ProtectedLayout({ children }) {
   const { isAuthenticated } = useAuth();
@@ -48,6 +49,7 @@ function AppRoutes() {
       <Route path="/network" element={<ProtectedLayout><NetworkPage /></ProtectedLayout>} />
       <Route path="/hotspots" element={<ProtectedLayout><HotspotPage /></ProtectedLayout>} />
       <Route path="/fir-search" element={<ProtectedLayout><FIRSearchPage /></ProtectedLayout>} />
+      <Route path="/new-case" element={<ProtectedLayout><NewCasePage /></ProtectedLayout>} />
       <Route path="/reports" element={<ProtectedLayout><ReportsPage /></ProtectedLayout>} />
       <Route path="/users" element={<ProtectedLayout><UsersPage /></ProtectedLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />

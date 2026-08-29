@@ -12,7 +12,8 @@
     "analytics": "ವಿಶ್ಲೇಷಣೆ",
     "userManagement": "ಬಳಕೆದಾರ ನಿರ್ವಹಣೆ",
     "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
-    "logOut": "ಲಾಗ್ ಔಟ್"
+    "logOut": "ಲಾಗ್ ಔಟ್",
+    "logNewCase": "ಹೊಸ ಪ್ರಕರಣ ದಾಖಲಿಸಿ"
   },
   "role": {
     "admin": "ನಿರ್ವಾಹಕ",
