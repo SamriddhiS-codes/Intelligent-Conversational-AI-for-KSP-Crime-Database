@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardTitle } from "../common/Card";
 import { getNetwork } from "../../lib/api";
 
@@ -34,6 +35,7 @@ function layout(nodes) {
 }
 
 export function CrimeNetworkCard({ crimeType, district, delay = 0 }) {
+  const { t } = useTranslation();
   const [graph, setGraph] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +53,7 @@ export function CrimeNetworkCard({ crimeType, district, delay = 0 }) {
 
   return (
     <Card delay={delay}>
-      <CardTitle eyebrow="Criminal Network Explorer" title="Accused ↔ crime-type connections" />
+      <CardTitle eyebrow={t("crimeNetworkCard.eyebrow")} title={t("crimeNetworkCard.title")} />
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-80">
         {graph.edges.map((e, i) => {
           const from = positioned[e.from];
@@ -92,10 +94,10 @@ export function CrimeNetworkCard({ crimeType, district, delay = 0 }) {
       </svg>
       <div className="flex items-center gap-5 mt-3 text-[12px] text-ink-muted">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> Crime type
+          <span className="w-2.5 h-2.5 rounded-full bg-accent inline-block" /> {t("crimeNetworkCard.crimeType")}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-ink inline-block" /> Accused person
+          <span className="w-2.5 h-2.5 rounded-full bg-ink inline-block" /> {t("crimeNetworkCard.accusedPerson")}
         </span>
       </div>
     </Card>

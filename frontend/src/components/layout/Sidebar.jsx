@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutGrid,
   Sparkles,
@@ -14,17 +15,18 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const ITEMS = [
-  { to: "/", icon: LayoutGrid, label: "Dashboard" },
-  { to: "/workspace", icon: Sparkles, label: "AI Workspace" },
-  { to: "/fir-search", icon: FileSearch, label: "FIR Search" },
-  { to: "/network", icon: Network, label: "Criminal Network" },
-  { to: "/hotspots", icon: Map, label: "Hotspot Map" },
-  { to: "/reports", icon: FileText, label: "Reports" },
-  { to: "/analytics", icon: BarChart3, label: "Analytics" },
+const ITEM_DEFS = [
+  { to: "/", icon: LayoutGrid, key: "dashboard" },
+  { to: "/workspace", icon: Sparkles, key: "aiWorkspace" },
+  { to: "/fir-search", icon: FileSearch, key: "firSearch" },
+  { to: "/network", icon: Network, key: "criminalNetwork" },
+  { to: "/hotspots", icon: Map, key: "hotspotMap" },
+  { to: "/reports", icon: FileText, key: "reports" },
+  { to: "/analytics", icon: BarChart3, key: "analytics" },
 ];
 
 export function Sidebar() {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { user, logout } = useAuth();
 
@@ -37,9 +39,9 @@ export function Sidebar() {
       }`}
     >
       <nav className="flex flex-col gap-1 pt-6 px-3">
-        {ITEMS.map(({ to, icon: Icon, label }) => (
+        {ITEM_DEFS.map(({ to, icon: Icon, key }) => (
           <NavLink
-            key={label}
+            key={key}
             to={to}
             end={to === "/"}
             className={({ isActive }) =>
@@ -52,7 +54,7 @@ export function Sidebar() {
           >
             <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
             {expanded && (
-              <span className="text-sm whitespace-nowrap">{label}</span>
+              <span className="text-sm whitespace-nowrap">{t(`nav.${key}`)}</span>
             )}
           </NavLink>
         ))}
@@ -70,7 +72,7 @@ export function Sidebar() {
           >
             <Users className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
             {expanded && (
-              <span className="text-sm whitespace-nowrap">User Management</span>
+              <span className="text-sm whitespace-nowrap">{t("nav.userManagement")}</span>
             )}
           </NavLink>
         )}
@@ -88,14 +90,14 @@ export function Sidebar() {
           }
         >
           <Settings className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
-          {expanded && <span className="text-sm">Settings</span>}
+          {expanded && <span className="text-sm">{t("nav.settings")}</span>}
         </NavLink>
         <button
           onClick={logout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-ink-muted hover:bg-highlight/50 hover:text-ink transition-colors"
         >
           <LogOut className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
-          {expanded && <span className="text-sm">Log out</span>}
+          {expanded && <span className="text-sm">{t("nav.logOut")}</span>}
         </button>
       </div>
     </aside>
