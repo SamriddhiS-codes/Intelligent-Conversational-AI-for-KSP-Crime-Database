@@ -1,7 +1,9 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { useTranslation } from "react-i18next";
 import { Card, CardTitle } from "../common/Card";
 
 export function StatisticsCard({ rows, delay = 0 }) {
+  const { t } = useTranslation();
   if (!rows?.length) return null;
 
   const keys = Object.keys(rows[0]);
@@ -19,7 +21,10 @@ export function StatisticsCard({ rows, delay = 0 }) {
 
   return (
     <Card delay={delay}>
-      <CardTitle eyebrow="Statistics" title={`By ${labelKey.replace(/_/g, " ")}`} />
+      <CardTitle
+        eyebrow={t("statisticsCard.eyebrow")}
+        title={t("statisticsCard.byLabel", { label: labelKey.replace(/_/g, " ") })}
+      />
       <div className="h-56 -ml-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 4, right: 12, bottom: 0, left: 0 }}>
