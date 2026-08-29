@@ -74,7 +74,11 @@
     "emptySubtitle": "Ask any question about Karnataka crime data",
     "supportsLanguages": "Supports English and ಕನ್ನಡ",
     "analyzing": "Analyzing crime data...",
-    "matchingRecords": "Matching Records"
+    "matchingRecords": "Matching Records",
+    "newChat": "New Chat",
+    "historyLabel": "History",
+    "loadingHistory": "Loading...",
+    "noHistory": "No past conversations yet."
   },
   "summaryCard": {
     "eyebrow": "Executive Summary",
@@ -260,5 +264,15 @@
     },
     "active": "Active",
     "inactive": "Inactive"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your account, language, and app preferences",
+    "account": "Account",
+    "language": "Language",
+    "languageDesc": "Choose the language used across the app interface and AI responses.",
+    "notifications": "Notifications",
+    "notificationsDesc": "Notification preferences are not yet configurable. This will let you control alerts for new hotspots and case updates in a future release.",
+    "about": "About"
   }
 }
