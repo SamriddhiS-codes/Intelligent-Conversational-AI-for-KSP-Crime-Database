@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, Numeric, ForeignKey, Text, func
+from pgvector.sqlalchemy import Vector
 from ..database import Base
 
 class PoliceStation(Base):
@@ -43,6 +44,9 @@ class Crime(Base):
     case_outcome = Column(Text)
     property_loss_inr = Column(Numeric(12, 2))
     investigating_officer = Column(Text)
+
+    case_narrative = Column(Text)
+    narrative_embedding = Column(Vector(768))
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     station_id = Column(Integer, ForeignKey("police_stations.id"), nullable=True)
