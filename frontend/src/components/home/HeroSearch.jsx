@@ -1,35 +1,38 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { LanguageToggle } from "./LanguageToggle";
 import { VoiceInputButton } from "./VoiceInputButton";
 import { useSpeechRecognition } from "../../lib/useSpeechRecognition";
 
-const EXAMPLES = [
-  "Find FIR KA-2025-01932",
-  "Which districts had the most robberies last year?",
-  "Show repeat offenders linked to extortion cases in Belagavi",
-  "Predict which districts are at rising risk this month",
-];
-
 export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
+  const { t, i18n } = useTranslation();
   const [value, setValue] = useState("");
-  const [language, setLanguage] = useState("en");
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const inputRef = useRef(null);
+
+  const language = i18n.language === "kn" ? "kn" : "en";
+
+  const setLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("ksp_lang", lang);
+  };
 
   const { isListening, supported, start, stop } = useSpeechRecognition(
     language,
     (transcript) => setValue(transcript)
   );
 
+  const examples = t("hero.examples", { returnObjects: true });
+
   useEffect(() => {
     if (compact) return;
     const interval = setInterval(() => {
-      setPlaceholderIndex((i) => (i + 1) % EXAMPLES.length);
+      setPlaceholderIndex((i) => (i + 1) % examples.length);
     }, 3200);
     return () => clearInterval(interval);
-  }, [compact]);
+  }, [compact, examples.length]);
 
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus();
@@ -62,7 +65,7 @@ export function HeroSearch({ compact = false, onSubmit, autoFocus = false }) {
           onChange={(e) => setValue(e.target.value)}
           lang={language}
           placeholder={
-            compact ? "Ask another question…" : EXAMPLES[placeholderIndex]
+            compact ? t("hero.placeholderCompact") : examples[placeholderIndex]
           }
           className={`flex-1 bg-transparent outline-none text-ink placeholder:text-ink-muted ${
             compact ? "text-sm" : "text-lg"
