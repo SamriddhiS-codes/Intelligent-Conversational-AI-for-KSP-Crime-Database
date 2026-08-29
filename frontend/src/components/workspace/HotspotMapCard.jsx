@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardTitle } from "../common/Card";
 import { getHotspots } from "../../lib/api";
 
@@ -12,6 +13,7 @@ function project(lat, lng, width, height) {
 }
 
 export function HotspotMapCard({ delay = 0 }) {
+  const { t } = useTranslation();
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const width = 600;
@@ -30,7 +32,7 @@ export function HotspotMapCard({ delay = 0 }) {
 
   return (
     <Card delay={delay}>
-      <CardTitle eyebrow="Hotspot Detection" title="Highest-concentration locations" />
+      <CardTitle eyebrow={t("hotspotMapCard.eyebrow")} title={t("hotspotMapCard.title")} />
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-72">
         <rect x="0" y="0" width={width} height={height} rx="16" fill="#F6F5F2" />
         {points.map((p, i) => {

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { ChevronDown, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Card } from "../common/Card";
 import { useAuth } from "../../context/AuthContext";
 
 export function ExplainabilityCard({ sql, intent, askedAt, delay = 0 }) {
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
 
@@ -17,7 +19,7 @@ export function ExplainabilityCard({ sql, intent, askedAt, delay = 0 }) {
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-accent" strokeWidth={1.75} />
           <span className="text-sm font-medium text-ink">
-            How the AI reached this
+            {t("explainability.heading")}
           </span>
           <span className="text-xs text-ink-muted bg-bg-secondary border border-border rounded-full px-2 py-0.5 capitalize">
             {intent}
@@ -40,18 +42,18 @@ export function ExplainabilityCard({ sql, intent, askedAt, delay = 0 }) {
             className="px-7 pb-6"
           >
             <div className="border-t border-border pt-4 space-y-3">
-              <Row label="Detected intent" value={intent} />
+              <Row label={t("explainability.detectedIntent")} value={intent} />
               <Row
-                label="Queried by"
+                label={t("explainability.queriedBy")}
                 value={`${user?.username || "—"} (${user?.role || "—"})`}
               />
               <Row
-                label="Timestamp"
-                value={askedAt ? new Date(askedAt).toLocaleString("en-IN") : "—"}
+                label={t("explainability.timestamp")}
+                value={askedAt ? new Date(askedAt).toLocaleString(i18n.language === "kn" ? "kn-IN" : "en-IN") : "—"}
               />
               {sql && (
                 <div>
-                  <p className="text-xs text-ink-muted mb-1.5">Generated SQL</p>
+                  <p className="text-xs text-ink-muted mb-1.5">{t("explainability.generatedSql")}</p>
                   <pre className="text-[12px] leading-relaxed bg-bg-secondary border border-border rounded-xl p-3.5 overflow-x-auto text-ink whitespace-pre-wrap">
                     {sql}
                   </pre>
