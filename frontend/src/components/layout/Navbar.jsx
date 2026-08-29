@@ -1,10 +1,12 @@
 import { Bell, ShieldHalf } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import { RoleBadge } from "../common/RoleBadge";
 
 export function Navbar({ searchSlot, onLogoClick }) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const today = new Date().toLocaleDateString("en-IN", {
+  const today = new Date().toLocaleDateString(i18n.language === "kn" ? "kn-IN" : "en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -18,7 +20,7 @@ export function Navbar({ searchSlot, onLogoClick }) {
       >
         <ShieldHalf className="w-5 h-5 text-accent" strokeWidth={1.75} />
         <span className="font-semibold text-ink text-[15px]">
-          KSP Intelligence AI
+          {t("app.title")}
         </span>
       </button>
 
