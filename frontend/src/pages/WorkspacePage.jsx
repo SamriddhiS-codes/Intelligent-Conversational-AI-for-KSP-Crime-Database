@@ -12,6 +12,7 @@ import { DistrictBreakdownCard } from "../components/workspace/DistrictBreakdown
 import { PredictiveSignalCard } from "../components/workspace/PredictiveSignalCard";
 import { ReportExportButton } from "../components/workspace/ReportExportButton";
 import { HeroSearch } from "../components/home/HeroSearch";
+import { ChatHistorySidebar } from "../components/workspace/ChatHistorySidebar";
 import { useRef, useEffect } from "react";
 
 const HOTSPOT_HINT = /hotspot|concentrat|highest.crime|most crime/i;
@@ -102,8 +103,10 @@ export function WorkspacePage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatEntries, loading]);
 
-  return (
-    <div className="flex flex-col min-h-screen">
+    return (
+    <div className="flex h-[calc(100vh-4rem)]">
+      <ChatHistorySidebar />
+      <div className="flex flex-col h-full flex-1">
       <div className="flex-1 overflow-y-auto px-6 py-8 max-w-5xl mx-auto w-full">
 
         {/* Empty state */}
@@ -149,6 +152,7 @@ export function WorkspacePage() {
         <div className="max-w-3xl mx-auto">
           <HeroSearch compact onSubmit={ask} />
         </div>
+      </div>
       </div>
     </div>
   );
