@@ -34,12 +34,12 @@ export function FIRSearchPage() {
   ];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-ink mb-1">{t("firSearchPage.title")}</h1>
       <p className="text-ink-muted text-sm mb-6">{t("firSearchPage.subtitle")}</p>
 
       <div className="bg-card rounded-2xl border border-border p-6 mb-6">
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input value={search} onChange={e => setSearch(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleSearch()}
             placeholder={t("firSearchPage.placeholder")}
@@ -74,8 +74,8 @@ export function FIRSearchPage() {
               : t("firSearchPage.noRecordsFound")}
           </h3>
           {results.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+              <table className="w-full text-sm min-w-[560px]">
                 <thead>
                   <tr className="bg-bg-secondary">
                     {Object.keys(results[0]).slice(0, 8).map(k => (
